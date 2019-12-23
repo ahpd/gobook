@@ -2,23 +2,24 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"os"
+	"strings"
 )
 
 func main() {
 
 	for _, url := range os.Args[1:] {
-
+		if !strings.HasPrefix(url, "http") {
+			url = "http://" + url
+		}
 		resp, err := http.Get(url)
 		handleError(err)
 
-		body, err := ioutil.ReadAll(resp.Body)
+		_, err = io.Copy(os.Stdout, resp.Body)
 		resp.Body.Close()
 		handleError(err)
-		fmt.Printf("%s", body)
-
 	}
 }
 
